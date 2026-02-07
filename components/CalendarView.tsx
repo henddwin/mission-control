@@ -53,11 +53,12 @@ export function CalendarView() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 md:space-y-6">
+      {/* Header */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">
-            {format(weekStart, "MMM d")} - {format(weekEnd, "MMM d, yyyy")}
+          <h2 className="text-xl md:text-2xl font-bold text-white">
+            {format(weekStart, "MMM d")} – {format(weekEnd, "MMM d, yyyy")}
           </h2>
           <p className="text-sm text-zinc-500">
             {tasks.length} scheduled {tasks.length === 1 ? "task" : "tasks"} this week
@@ -76,7 +77,8 @@ export function CalendarView() {
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-4">
+      {/* Desktop: 7-column grid */}
+      <div className="hidden md:grid grid-cols-7 gap-3">
         {days.map((day) => {
           const dayTasks = getTasksForDay(day);
           const isToday = isSameDay(day, new Date());
@@ -84,22 +86,14 @@ export function CalendarView() {
           return (
             <div
               key={day.toISOString()}
-              className="min-h-[200px] rounded-lg border border-zinc-800 bg-zinc-950/50 p-3"
+              className="min-h-[180px] rounded-lg border border-zinc-800 bg-zinc-950/50 p-3"
             >
               <div className="mb-3 flex items-center justify-between">
                 <div>
-                  <div
-                    className={`text-xs font-medium ${
-                      isToday ? "text-blue-400" : "text-zinc-500"
-                    }`}
-                  >
+                  <div className={`text-xs font-medium ${isToday ? "text-blue-400" : "text-zinc-500"}`}>
                     {format(day, "EEE")}
                   </div>
-                  <div
-                    className={`text-lg font-bold ${
-                      isToday ? "text-blue-400" : "text-white"
-                    }`}
-                  >
+                  <div className={`text-lg font-bold ${isToday ? "text-blue-400" : "text-white"}`}>
                     {format(day, "d")}
                   </div>
                 </div>
@@ -109,17 +103,59 @@ export function CalendarView() {
                   </div>
                 )}
               </div>
-
               <div className="space-y-2">
                 {dayTasks.map((task: any) => (
                   <CalendarEvent key={task._id} task={task} />
                 ))}
               </div>
-
               {dayTasks.length === 0 && (
-                <div className="flex h-32 items-center justify-center text-xs text-zinc-600">
+                <div className="flex h-24 items-center justify-center text-xs text-zinc-600">
                   No tasks
                 </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Mobile: stacked list */}
+      <div className="md:hidden space-y-3">
+        {days.map((day) => {
+          const dayTasks = getTasksForDay(day);
+          const isToday = isSameDay(day, new Date());
+
+          return (
+            <div
+              key={day.toISOString()}
+              className="rounded-lg border border-zinc-800 bg-zinc-950/50 p-3"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`text-sm font-bold ${isToday ? "text-blue-400" : "text-white"}`}
+                  >
+                    {format(day, "EEE, MMM d")}
+                  </div>
+                  {isToday && (
+                    <span className="rounded-full bg-blue-500/20 px-2 py-0.5 text-[10px] font-medium text-blue-400">
+                      TODAY
+                    </span>
+                  )}
+                </div>
+                {dayTasks.length > 0 && (
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-950 text-xs font-bold text-blue-400">
+                    {dayTasks.length}
+                  </div>
+                )}
+              </div>
+              {dayTasks.length > 0 ? (
+                <div className="space-y-2">
+                  {dayTasks.map((task: any) => (
+                    <CalendarEvent key={task._id} task={task} />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-zinc-600 py-1">No tasks</p>
               )}
             </div>
           );

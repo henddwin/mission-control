@@ -25,20 +25,22 @@ export function ActivityFeed() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap gap-2">
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex flex-wrap gap-1.5 md:gap-2">
         <Button
           variant={selectedType === undefined ? "default" : "outline"}
           size="sm"
+          className="text-xs md:text-sm h-7 md:h-9 px-2 md:px-3"
           onClick={() => setSelectedType(undefined)}
         >
-          All Activities
+          All
         </Button>
         {actionTypes.map((type: string) => (
           <Button
             key={type}
             variant={selectedType === type ? "default" : "outline"}
             size="sm"
+            className="text-xs md:text-sm h-7 md:h-9 px-2 md:px-3"
             onClick={() => setSelectedType(type)}
           >
             {type.replace(/_/g, " ")}
@@ -46,9 +48,9 @@ export function ActivityFeed() {
         ))}
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2 md:space-y-3">
         {activities.length === 0 ? (
-          <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-dashed border-zinc-800 bg-zinc-950/50">
+          <div className="flex h-48 md:h-64 flex-col items-center justify-center rounded-lg border border-dashed border-zinc-800 bg-zinc-950/50">
             <p className="text-sm text-zinc-500">No activities found</p>
           </div>
         ) : (

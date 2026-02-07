@@ -52,24 +52,28 @@ export function ActivityCard({ activity }: ActivityCardProps) {
 
   return (
     <Card className="border-zinc-800 bg-zinc-900/50 transition-all hover:bg-zinc-900">
-      <CardContent className="p-4">
-        <div className="flex items-start gap-4">
-          <div className={cn("rounded-lg p-2", colorClasses)}>
-            <Icon className="h-5 w-5" />
+      <CardContent className="p-3 md:p-4">
+        <div className="flex items-start gap-3 md:gap-4">
+          <div className={cn("rounded-lg p-1.5 md:p-2 flex-shrink-0", colorClasses)}>
+            <Icon className="h-4 w-4 md:h-5 md:w-5" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
-              <div className="flex-1">
-                <h3 className="font-medium text-white">{activity.title}</h3>
-                <div className="mt-1 flex items-center gap-2 text-xs text-zinc-500">
-                  <span>{format(new Date(activity.timestamp), "MMM d, yyyy 'at' h:mm a")}</span>
-                  <span>•</span>
-                  <Badge variant="outline" className="text-xs">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm md:text-base font-medium text-white truncate">
+                  {activity.title}
+                </h3>
+                <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-500">
+                  <span className="whitespace-nowrap">
+                    {format(new Date(activity.timestamp), "MMM d, h:mm a")}
+                  </span>
+                  <span className="hidden sm:inline">•</span>
+                  <Badge variant="outline" className="text-[10px] md:text-xs">
                     {activity.actionType.replace(/_/g, " ")}
                   </Badge>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center flex-shrink-0">
                 {activity.status === "success" ? (
                   <CheckCircle2 className="h-4 w-4 text-green-500" />
                 ) : activity.status === "failed" ? (
@@ -81,7 +85,7 @@ export function ActivityCard({ activity }: ActivityCardProps) {
             </div>
 
             {activity.details && (
-              <div className="mt-3">
+              <div className="mt-2">
                 <button
                   onClick={() => setExpanded(!expanded)}
                   className="flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-300 transition-colors"
@@ -99,12 +103,12 @@ export function ActivityCard({ activity }: ActivityCardProps) {
                   )}
                 </button>
                 {expanded && (
-                  <div className="mt-2 rounded-md bg-zinc-950 p-3 text-sm text-zinc-300">
+                  <div className="mt-2 rounded-md bg-zinc-950 p-2 md:p-3 text-xs md:text-sm text-zinc-300">
                     {activity.details}
                     {activity.metadata && (
                       <div className="mt-2 border-t border-zinc-800 pt-2">
                         <span className="text-xs font-medium text-zinc-500">Metadata:</span>
-                        <pre className="mt-1 text-xs text-zinc-400">
+                        <pre className="mt-1 text-xs text-zinc-400 overflow-x-auto">
                           {JSON.stringify(activity.metadata, null, 2)}
                         </pre>
                       </div>

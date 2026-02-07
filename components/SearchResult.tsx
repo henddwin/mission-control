@@ -30,33 +30,28 @@ export function SearchResult({ type, result, query }: SearchResultProps) {
   if (type === "activity") {
     return (
       <Card className="border-zinc-800 bg-zinc-900/50 transition-all hover:bg-zinc-900">
-        <CardContent className="p-4">
-          <div className="flex items-start gap-4">
-            <div className="rounded-lg bg-blue-950 p-2 text-blue-400">
-              <Activity className="h-5 w-5" />
+        <CardContent className="p-3 md:p-4">
+          <div className="flex items-start gap-3">
+            <div className="rounded-lg bg-blue-950 p-1.5 md:p-2 text-blue-400 flex-shrink-0">
+              <Activity className="h-4 w-4 md:h-5 md:w-5" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex-1">
-                  <h3 className="font-medium text-white">
-                    {highlightText(result.title, query)}
-                  </h3>
-                  <div className="mt-1 flex items-center gap-2 text-xs text-zinc-500">
-                    <span>
-                      {format(new Date(result.timestamp), "MMM d, yyyy 'at' h:mm a")}
-                    </span>
-                    <span>•</span>
-                    <Badge variant="outline" className="text-xs">
-                      {result.actionType.replace(/_/g, " ")}
-                    </Badge>
-                  </div>
-                  {result.details && (
-                    <p className="mt-2 text-sm text-zinc-400 line-clamp-2">
-                      {highlightText(result.details, query)}
-                    </p>
-                  )}
-                </div>
+              <h3 className="text-sm md:text-base font-medium text-white truncate">
+                {highlightText(result.title, query)}
+              </h3>
+              <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-500">
+                <span className="whitespace-nowrap">
+                  {format(new Date(result.timestamp), "MMM d, h:mm a")}
+                </span>
+                <Badge variant="outline" className="text-[10px] md:text-xs">
+                  {result.actionType.replace(/_/g, " ")}
+                </Badge>
               </div>
+              {result.details && (
+                <p className="mt-2 text-xs md:text-sm text-zinc-400 line-clamp-2">
+                  {highlightText(result.details, query)}
+                </p>
+              )}
             </div>
           </div>
         </CardContent>
@@ -67,39 +62,32 @@ export function SearchResult({ type, result, query }: SearchResultProps) {
   if (type === "document") {
     return (
       <Card className="border-zinc-800 bg-zinc-900/50 transition-all hover:bg-zinc-900">
-        <CardContent className="p-4">
-          <div className="flex items-start gap-4">
-            <div className="rounded-lg bg-purple-950 p-2 text-purple-400">
+        <CardContent className="p-3 md:p-4">
+          <div className="flex items-start gap-3">
+            <div className="rounded-lg bg-purple-950 p-1.5 md:p-2 text-purple-400 flex-shrink-0">
               {result.source === "memory" ? (
-                <FileText className="h-5 w-5" />
+                <FileText className="h-4 w-4 md:h-5 md:w-5" />
               ) : (
-                <File className="h-5 w-5" />
+                <File className="h-4 w-4 md:h-5 md:w-5" />
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex-1">
-                  <h3 className="font-medium text-white">
-                    {highlightText(result.title, query)}
-                  </h3>
-                  <div className="mt-1 flex items-center gap-2 text-xs text-zinc-500">
-                    <Badge variant="outline" className="text-xs">
-                      {result.source}
-                    </Badge>
-                    {result.sourcePath && (
-                      <>
-                        <span>•</span>
-                        <span className="font-mono">{result.sourcePath}</span>
-                      </>
-                    )}
-                  </div>
-                  <p className="mt-2 text-sm text-zinc-400 line-clamp-3">
-                    {highlightText(result.content, query)}
-                  </p>
-                  <div className="mt-2 text-xs text-zinc-600">
-                    Updated {format(new Date(result.lastUpdated), "MMM d, yyyy")}
-                  </div>
-                </div>
+              <h3 className="text-sm md:text-base font-medium text-white truncate">
+                {highlightText(result.title, query)}
+              </h3>
+              <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-500">
+                <Badge variant="outline" className="text-[10px] md:text-xs">
+                  {result.source}
+                </Badge>
+                {result.sourcePath && (
+                  <span className="font-mono truncate max-w-[200px]">{result.sourcePath}</span>
+                )}
+              </div>
+              <p className="mt-2 text-xs md:text-sm text-zinc-400 line-clamp-2 md:line-clamp-3">
+                {highlightText(result.content, query)}
+              </p>
+              <div className="mt-1.5 text-[10px] md:text-xs text-zinc-600">
+                Updated {format(new Date(result.lastUpdated), "MMM d, yyyy")}
               </div>
             </div>
           </div>
