@@ -15,6 +15,10 @@ export default defineSchema({
     .searchIndex("search_activities", {
       searchField: "title",
       filterFields: ["actionType"],
+    })
+    .searchIndex("search_activity_details", {
+      searchField: "details",
+      filterFields: ["actionType"],
     }),
 
   scheduledTasks: defineTable({
@@ -36,8 +40,13 @@ export default defineSchema({
     source: v.string(),
     sourcePath: v.optional(v.string()),
     lastUpdated: v.number(),
-  }).searchIndex("search_documents", {
-    searchField: "content",
-    filterFields: ["source"],
-  }),
+  })
+    .searchIndex("search_documents", {
+      searchField: "content",
+      filterFields: ["source"],
+    })
+    .searchIndex("search_document_titles", {
+      searchField: "title",
+      filterFields: ["source"],
+    }),
 });

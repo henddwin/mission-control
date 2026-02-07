@@ -7,27 +7,56 @@ export const searchAll = query({
   },
   handler: async (ctx, args) => {
     if (!args.query || args.query.trim().length === 0) {
-      return {
-        activities: [],
-        documents: [],
-      };
+      return { activities: [], documents: [] };
     }
 
-    // Search activities
-    const activityResults = await ctx.db
+    // Search activities by title
+    const byTitle = await ctx.db
       .query("activities")
       .withSearchIndex("search_activities", (q) => q.search("title", args.query))
       .take(20);
 
-    // Search documents
-    const documentResults = await ctx.db
+    // Search activities by details
+    const byDetails = await ctx.db
+      .query("activities")
+      .withSearchIndex("search_activity_details", (q) => q.search("details", args.query))
+      .take(20);
+
+    // Merge & dedupe activities
+    const seenIds = new Set(byTitle.map((a) => a._id));
+    const mergedActivities = [...byTitle];
+    for (const a of byDetails) {
+      if (!seenIds.has(a._id)) {
+        mergedActivities.push(a);
+        seenIds.add(a._id);
+      }
+    }
+
+    // Search documents by content
+    const docsByContent = await ctx.db
       .query("documents")
       .withSearchIndex("search_documents", (q) => q.search("content", args.query))
       .take(20);
 
+    // Search documents by title
+    const docsByTitle = await ctx.db
+      .query("documents")
+      .withSearchIndex("search_document_titles", (q) => q.search("title", args.query))
+      .take(20);
+
+    // Merge & dedupe documents
+    const seenDocIds = new Set(docsByContent.map((d) => d._id));
+    const mergedDocuments = [...docsByContent];
+    for (const d of docsByTitle) {
+      if (!seenDocIds.has(d._id)) {
+        mergedDocuments.push(d);
+        seenDocIds.add(d._id);
+      }
+    }
+
     return {
-      activities: activityResults,
-      documents: documentResults,
+      activities: mergedActivities,
+      documents: mergedDocuments,
     };
   },
 });
@@ -38,21 +67,28 @@ export const searchActivities = query({
     actionType: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    if (!args.query || args.query.trim().length === 0) {
-      return [];
-    }
+    if (!args.query || args.query.trim().length === 0) return [];
 
-    let searchQuery = ctx.db
+    const byTitle = await ctx.db
       .query("activities")
-      .withSearchIndex("search_activities", (q) => q.search("title", args.query));
+      .withSearchIndex("search_activities", (q) => q.search("title", args.query))
+      .take(50);
+
+    const byDetails = await ctx.db
+      .query("activities")
+      .withSearchIndex("search_activity_details", (q) => q.search("details", args.query))
+      .take(50);
+
+    const seenIds = new Set(byTitle.map((a) => a._id));
+    const merged = [...byTitle];
+    for (const a of byDetails) {
+      if (!seenIds.has(a._id)) { merged.push(a); seenIds.add(a._id); }
+    }
 
     if (args.actionType) {
-      searchQuery = searchQuery.filter((q) =>
-        q.eq(q.field("actionType"), args.actionType)
-      );
+      return merged.filter((a) => a.actionType === args.actionType);
     }
-
-    return await searchQuery.take(50);
+    return merged;
   },
 });
 
@@ -62,20 +98,27 @@ export const searchDocuments = query({
     source: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    if (!args.query || args.query.trim().length === 0) {
-      return [];
-    }
+    if (!args.query || args.query.trim().length === 0) return [];
 
-    let searchQuery = ctx.db
+    const byContent = await ctx.db
       .query("documents")
-      .withSearchIndex("search_documents", (q) => q.search("content", args.query));
+      .withSearchIndex("search_documents", (q) => q.search("content", args.query))
+      .take(50);
+
+    const byTitle = await ctx.db
+      .query("documents")
+      .withSearchIndex("search_document_titles", (q) => q.search("title", args.query))
+      .take(50);
+
+    const seenIds = new Set(byContent.map((d) => d._id));
+    const merged = [...byContent];
+    for (const d of byTitle) {
+      if (!seenIds.has(d._id)) { merged.push(d); seenIds.add(d._id); }
+    }
 
     if (args.source) {
-      searchQuery = searchQuery.filter((q) =>
-        q.eq(q.field("source"), args.source)
-      );
+      return merged.filter((d) => d.source === args.source);
     }
-
-    return await searchQuery.take(50);
+    return merged;
   },
 });
