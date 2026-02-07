@@ -35,9 +35,17 @@ export function CalendarView() {
     if (!tasks) return [];
     const dayStart = startOfDay(day).getTime();
     const dayEnd = endOfDay(day).getTime();
-    return tasks.filter(
-      (task: any) => task.nextRun && task.nextRun >= dayStart && task.nextRun <= dayEnd
-    );
+    return tasks.filter((task: any) => {
+      // Recurring/cron active tasks show on every day
+      if (
+        task.status === "active" &&
+        (task.scheduleType === "cron" || task.scheduleType === "recurring")
+      ) {
+        return true;
+      }
+      // One-shot tasks show on their specific day
+      return task.nextRun && task.nextRun >= dayStart && task.nextRun <= dayEnd;
+    });
   };
 
   const goToPreviousWeek = () => setCurrentWeek(subWeeks(currentWeek, 1));

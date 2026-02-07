@@ -22,17 +22,27 @@ export const getWeekTasks = query({
     weekEnd: v.number(),
   },
   handler: async (ctx, args) => {
-    const tasks = await ctx.db
-      .query("scheduledTasks")
-      .withIndex("by_nextRun")
-      .filter((q) =>
-        q.and(
-          q.gte(q.field("nextRun"), args.weekStart),
-          q.lte(q.field("nextRun"), args.weekEnd)
-        )
-      )
-      .collect();
-    return tasks;
+    // Get ALL tasks
+    const allTasks = await ctx.db.query("scheduledTasks").collect();
+
+    // Return recurring/cron active tasks (they show every day)
+    // plus one-shot tasks that fall within this week
+    return allTasks.filter((task) => {
+      // Active recurring/cron tasks always show
+      if (
+        task.status === "active" &&
+        (task.scheduleType === "cron" || task.scheduleType === "recurring")
+      ) {
+        return true;
+      }
+
+      // One-shot tasks: show if nextRun is within this week
+      if (task.nextRun) {
+        return task.nextRun >= args.weekStart && task.nextRun <= args.weekEnd;
+      }
+
+      return false;
+    });
   },
 });
 
