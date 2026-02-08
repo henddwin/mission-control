@@ -9,9 +9,19 @@
  */
 
 import type * as activities from "../activities.js";
+import type * as agentLogs from "../agentLogs.js";
+import type * as agents from "../agents.js";
+import type * as debates from "../debates.js";
+import type * as messages from "../messages.js";
+import type * as modelConfig from "../modelConfig.js";
+import type * as notifications from "../notifications.js";
 import type * as scheduledTasks from "../scheduledTasks.js";
 import type * as search from "../search.js";
 import type * as seed from "../seed.js";
+import type * as selfImprove from "../selfImprove.js";
+import type * as standup from "../standup.js";
+import type * as tasks from "../tasks.js";
+import type * as threadSubscriptions from "../threadSubscriptions.js";
 
 import type {
   ApiFromModules,
@@ -21,9 +31,19 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   activities: typeof activities;
+  agentLogs: typeof agentLogs;
+  agents: typeof agents;
+  debates: typeof debates;
+  messages: typeof messages;
+  modelConfig: typeof modelConfig;
+  notifications: typeof notifications;
   scheduledTasks: typeof scheduledTasks;
   search: typeof search;
   seed: typeof seed;
+  selfImprove: typeof selfImprove;
+  standup: typeof standup;
+  tasks: typeof tasks;
+  threadSubscriptions: typeof threadSubscriptions;
 }>;
 
 /**

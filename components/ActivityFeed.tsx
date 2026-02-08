@@ -4,9 +4,8 @@ import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { ActivityCard } from "./ActivityCard";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
 import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function ActivityFeed() {
   const [selectedType, setSelectedType] = useState<string | undefined>(undefined);
@@ -19,39 +18,47 @@ export function ActivityFeed() {
   if (activities === undefined || actionTypes === undefined) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-zinc-500" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#8A8A8A]" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4 md:space-y-6">
-      <div className="flex flex-wrap gap-1.5 md:gap-2">
-        <Button
-          variant={selectedType === undefined ? "default" : "outline"}
-          size="sm"
-          className="text-xs md:text-sm h-7 md:h-9 px-2 md:px-3"
+    <div className="space-y-6">
+      {/* Filter buttons */}
+      <div className="flex flex-wrap gap-2">
+        <button
           onClick={() => setSelectedType(undefined)}
+          className={cn(
+            "px-4 py-2 rounded-lg text-xs font-mono uppercase tracking-wider transition-all",
+            selectedType === undefined
+              ? "bg-[#E8DCC8] text-[#0A0A0A] font-semibold"
+              : "bg-[#111111] text-[#8A8A8A] border border-[rgba(255,255,255,0.06)] hover:border-[#E8DCC8]/30 hover:text-[#F5F5F3]"
+          )}
         >
           All
-        </Button>
+        </button>
         {actionTypes.map((type: string) => (
-          <Button
+          <button
             key={type}
-            variant={selectedType === type ? "default" : "outline"}
-            size="sm"
-            className="text-xs md:text-sm h-7 md:h-9 px-2 md:px-3"
             onClick={() => setSelectedType(type)}
+            className={cn(
+              "px-4 py-2 rounded-lg text-xs font-mono uppercase tracking-wider transition-all",
+              selectedType === type
+                ? "bg-[#E8DCC8] text-[#0A0A0A] font-semibold"
+                : "bg-[#111111] text-[#8A8A8A] border border-[rgba(255,255,255,0.06)] hover:border-[#E8DCC8]/30 hover:text-[#F5F5F3]"
+            )}
           >
             {type.replace(/_/g, " ")}
-          </Button>
+          </button>
         ))}
       </div>
 
-      <div className="space-y-2 md:space-y-3">
+      {/* Activity list */}
+      <div className="space-y-3">
         {activities.length === 0 ? (
-          <div className="flex h-48 md:h-64 flex-col items-center justify-center rounded-lg border border-dashed border-zinc-800 bg-zinc-950/50">
-            <p className="text-sm text-zinc-500">No activities found</p>
+          <div className="flex h-64 flex-col items-center justify-center rounded-lg border border-dashed border-[rgba(255,255,255,0.06)] bg-[#111111]">
+            <p className="text-sm text-[#8A8A8A] font-mono">No activities found</p>
           </div>
         ) : (
           activities.map((activity: any) => (
@@ -60,11 +67,14 @@ export function ActivityFeed() {
         )}
       </div>
 
+      {/* Count badge */}
       {activities.length > 0 && (
-        <div className="flex items-center justify-center">
-          <Badge variant="secondary" className="text-xs">
-            Showing {activities.length} {activities.length === 1 ? "activity" : "activities"}
-          </Badge>
+        <div className="flex items-center justify-center pt-4">
+          <div className="px-4 py-2 rounded-lg bg-[#111111] border border-[rgba(255,255,255,0.06)]">
+            <span className="mono-small">
+              {activities.length} {activities.length === 1 ? "ACTIVITY" : "ACTIVITIES"}
+            </span>
+          </div>
         </div>
       )}
     </div>
