@@ -404,21 +404,30 @@ export default function CRMPage() {
             )}
           </div>
           {showCompanyDropdown && companySearch && (
-            <div className="absolute z-[100] mt-1 left-0 w-full max-w-xs rounded-lg shadow-2xl max-h-52 overflow-y-auto border border-[rgba(255,255,255,0.12)] bg-[#181818] backdrop-blur-none" style={{ backgroundColor: '#181818', isolation: 'isolate' }}>
+            <div
+              className="absolute mt-1 left-0 w-full max-w-xs rounded-lg max-h-52 overflow-y-auto"
+              style={{ zIndex: 9999, backgroundColor: '#141414', border: '1px solid rgba(255,255,255,0.15)', boxShadow: '0 8px 32px rgba(0,0,0,0.8)' }}
+            >
               {filteredCompanies.length === 0 ? (
-                <div className="px-3 py-2.5 text-xs text-[#555]">No companies match</div>
+                <div style={{ padding: '8px 12px', fontSize: 12, color: '#555', backgroundColor: '#141414' }}>No companies match</div>
               ) : (
                 filteredCompanies.map(([company, count]) => (
                   <button
                     key={company}
                     onClick={() => { setFilterCompany(company); setCompanySearch(''); setShowCompanyDropdown(false); }}
-                    className={cn(
-                      "w-full text-left px-3 py-2 text-xs transition-colors flex justify-between border-b border-[rgba(255,255,255,0.04)] last:border-0",
-                      filterCompany === company ? 'bg-[#252520] text-[#E8DCC8]' : 'bg-[#181818] text-[#aaa] hover:bg-[#222] hover:text-[#E8DCC8]'
-                    )}
+                    style={{
+                      width: '100%', textAlign: 'left', padding: '8px 12px', fontSize: 12,
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      backgroundColor: filterCompany === company ? '#1e1e1a' : '#141414',
+                      color: filterCompany === company ? '#E8DCC8' : '#aaa',
+                      borderBottom: '1px solid rgba(255,255,255,0.04)',
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#1c1c1c'; e.currentTarget.style.color = '#E8DCC8'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = filterCompany === company ? '#1e1e1a' : '#141414'; e.currentTarget.style.color = filterCompany === company ? '#E8DCC8' : '#aaa'; }}
                   >
-                    <span className="truncate">{company}</span>
-                    <span className="text-[#555] ml-2 flex-shrink-0">{count}</span>
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{company}</span>
+                    <span style={{ color: '#555', marginLeft: 8, flexShrink: 0 }}>{count}</span>
                   </button>
                 ))
               )}
