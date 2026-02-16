@@ -393,7 +393,7 @@ export default function CRMPage() {
                 value={companySearch}
                 onChange={(e) => { setCompanySearch(e.target.value); setShowCompanyDropdown(true); }}
                 onFocus={() => setShowCompanyDropdown(true)}
-                className="w-full pl-8 pr-3 py-1.5 rounded-md bg-[#111111] border border-[rgba(255,255,255,0.06)] text-xs text-[#F5F5F3] placeholder:text-[#444] focus:outline-none focus:border-[#E8DCC8]/40"
+                className="w-full pl-7 pr-3 py-1 rounded-md bg-[#0e0e0e] border border-[rgba(255,255,255,0.08)] text-[11px] text-[#F5F5F3] placeholder:text-[#444] focus:outline-none focus:border-[#E8DCC8]/40"
               />
             </div>
             {filterCompany && (
@@ -404,17 +404,17 @@ export default function CRMPage() {
             )}
           </div>
           {showCompanyDropdown && companySearch && (
-            <div className="absolute z-40 mt-1 w-full max-w-xs bg-[#111111] border border-[rgba(255,255,255,0.1)] rounded-lg shadow-xl max-h-48 overflow-y-auto">
+            <div className="absolute z-[100] mt-1 left-0 w-full max-w-xs rounded-lg shadow-2xl max-h-52 overflow-y-auto border border-[rgba(255,255,255,0.12)]" style={{ backgroundColor: '#181818' }}>
               {filteredCompanies.length === 0 ? (
-                <div className="px-3 py-2 text-xs text-[#555]">No companies match</div>
+                <div className="px-3 py-2.5 text-xs text-[#555]">No companies match</div>
               ) : (
                 filteredCompanies.map(([company, count]) => (
                   <button
                     key={company}
                     onClick={() => { setFilterCompany(company); setCompanySearch(''); setShowCompanyDropdown(false); }}
                     className={cn(
-                      "w-full text-left px-3 py-1.5 text-xs hover:bg-[#1a1a1a] transition-colors flex justify-between",
-                      filterCompany === company ? 'text-[#E8DCC8]' : 'text-[#999]'
+                      "w-full text-left px-3 py-2 text-xs transition-colors flex justify-between border-b border-[rgba(255,255,255,0.04)] last:border-0",
+                      filterCompany === company ? 'bg-[#E8DCC8]/10 text-[#E8DCC8]' : 'text-[#aaa] hover:bg-[#222] hover:text-[#E8DCC8]'
                     )}
                   >
                     <span className="truncate">{company}</span>
