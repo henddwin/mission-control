@@ -126,7 +126,7 @@ export default function CRMPage() {
     return Object.entries(counts)
       .filter(([_, count]) => count >= 2)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 20);
+      .slice(0, 40);
   }, [contacts]);
 
   /* ─── Filtering ─── */
@@ -353,7 +353,7 @@ export default function CRMPage() {
           <>
             <div className="mono-small mb-2">COMPANY</div>
             <div className="flex flex-wrap gap-1.5">
-              {topCompanies.slice(0, 12).map(([company, count]) => (
+              {topCompanies.slice(0, 30).map(([company, count]) => (
                 <button
                   key={company}
                   onClick={() => setFilterCompany(filterCompany === company ? '' : company)}
