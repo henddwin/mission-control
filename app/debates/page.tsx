@@ -1,20 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { MessageCircle, Users, TrendingUp } from "lucide-react";
+import { MessageCircle, Users, TrendingUp, AlertCircle } from "lucide-react";
 
 export default function DebatesPage() {
-  const debates = useQuery(api.debates.list, {});
-  const agents = useQuery(api.agents.list, {});
-  const [expandedDebate, setExpandedDebate] = useState<string | null>(null);
-
-  const agentMap = new Map((agents ?? []).map((a: any) => [a.sessionKey, a]));
-
-  const activeDebates = (debates ?? []).filter((d: any) => d.status === "open" || d.status === "voting");
-  const resolvedDebates = (debates ?? []).filter((d: any) => d.status === "resolved");
-
   return (
     <div className="space-y-8 animate-fade-in mb-20 md:mb-0">
       {/* Header */}
@@ -28,83 +16,110 @@ export default function DebatesPage() {
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="p-4 rounded-lg bg-[#111111] border border-[rgba(255,255,255,0.06)]">
-          <div className="text-3xl font-bold text-[#F5F5F3] mb-1">
-            {activeDebates.length}
-          </div>
+          <div className="text-3xl font-bold text-[#8A8A8A] mb-1">0</div>
           <div className="mono-small">ACTIVE DEBATES</div>
         </div>
         <div className="p-4 rounded-lg bg-[#111111] border border-[rgba(255,255,255,0.06)]">
-          <div className="text-3xl font-bold text-[#F5F5F3] mb-1">
-            {resolvedDebates.length}
-          </div>
+          <div className="text-3xl font-bold text-[#8A8A8A] mb-1">0</div>
           <div className="mono-small">RESOLVED</div>
         </div>
         <div className="p-4 rounded-lg bg-[#111111] border border-[rgba(255,255,255,0.06)]">
-          <div className="text-3xl font-bold text-[#F5F5F3] mb-1">
-            {(agents ?? []).length}
-          </div>
+          <div className="text-3xl font-bold text-[#8A8A8A] mb-1">0</div>
           <div className="mono-small">PARTICIPANTS</div>
         </div>
       </div>
 
-      {/* Debates list */}
-      {debates === undefined ? (
-        <div className="space-y-4">
-          {[1, 2].map((i) => (
-            <div key={i} className="premium-card p-6 animate-pulse">
-              <div className="h-6 bg-[#1a1a1a] rounded w-3/4 mb-4" />
-              <div className="h-4 bg-[#1a1a1a] rounded w-1/4" />
-            </div>
-          ))}
+      {/* Empty State */}
+      <div className="flex h-96 flex-col items-center justify-center rounded-lg border border-dashed border-[rgba(255,255,255,0.06)] bg-[#111111]">
+        <div className="w-20 h-20 rounded-full bg-[#E8DCC8]/10 flex items-center justify-center mb-6">
+          <MessageCircle className="w-10 h-10 text-[#E8DCC8]" />
         </div>
-      ) : (debates ?? []).length > 0 ? (
-        <div className="space-y-4">
-          {(debates ?? []).map((debate: any) => {
-            const isExpanded = expandedDebate === debate._id;
-            const statusColor = debate.status === "resolved" 
-              ? "text-[#8A8A8A] bg-[#8A8A8A]/10 border-[#8A8A8A]/20"
-              : "text-[#4ADE80] bg-[#4ADE80]/10 border-[#4ADE80]/20";
-            
-            return (
-              <div key={debate._id} className="premium-card overflow-hidden">
-                <div 
-                  className="p-6 cursor-pointer hover:bg-[rgba(255,255,255,0.02)] transition-colors"
-                  onClick={() => setExpandedDebate(isExpanded ? null : debate._id)}
-                >
-                  <div className="flex items-start justify-between gap-4 mb-3">
-                    <h3 className="text-lg font-semibold text-[#F5F5F3] leading-snug">
-                      {debate.topic}
-                    </h3>
-                    <div className={`flex-shrink-0 px-3 py-1.5 rounded-lg border text-xs font-mono uppercase ${statusColor}`}>
-                      {debate.status}
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-4 text-sm text-[#8A8A8A]">
-                    <span className="font-mono text-xs">Created by {debate.createdBy}</span>
-                    <span className="font-mono text-xs">{new Date(debate.createdAt).toLocaleDateString()}</span>
-                  </div>
+        <h2 className="text-xl font-bold text-[#F5F5F3] mb-2">No Active Debates</h2>
+        <p className="text-sm text-[#8A8A8A] max-w-md text-center mb-6">
+          Debates will appear when agents disagree on strategy or need collaborative decision making.
+        </p>
+        
+        {/* Info Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4 w-full max-w-2xl">
+          <div className="p-4 rounded-lg bg-[#0A0A0A] border border-[rgba(255,255,255,0.06)]">
+            <Users className="w-5 h-5 text-[#4ADE80] mb-2" />
+            <h3 className="text-xs font-semibold text-[#F5F5F3] mb-1">Multi-Agent</h3>
+            <p className="text-xs text-[#8A8A8A]">
+              Multiple agents propose and vote on solutions
+            </p>
+          </div>
+          
+          <div className="p-4 rounded-lg bg-[#0A0A0A] border border-[rgba(255,255,255,0.06)]">
+            <TrendingUp className="w-5 h-5 text-[#F59E0B] mb-2" />
+            <h3 className="text-xs font-semibold text-[#F5F5F3] mb-1">Strategy</h3>
+            <p className="text-xs text-[#8A8A8A]">
+              Debates focus on high-impact decisions
+            </p>
+          </div>
+          
+          <div className="p-4 rounded-lg bg-[#0A0A0A] border border-[rgba(255,255,255,0.06)]">
+            <AlertCircle className="w-5 h-5 text-[#C4785B] mb-2" />
+            <h3 className="text-xs font-semibold text-[#F5F5F3] mb-1">Consensus</h3>
+            <p className="text-xs text-[#8A8A8A]">
+              Coordinator selects winning approach
+            </p>
+          </div>
+        </div>
+      </div>
 
-                  {debate.resolution && (
-                    <div className="mt-3 p-3 rounded-lg bg-[#E8DCC8]/5 border border-[#E8DCC8]/10">
-                      <div className="mono-small text-[#E8DCC8] mb-1">RESOLUTION</div>
-                      <p className="text-sm text-[#F5F5F3]">{debate.resolution}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+      {/* How Debates Work */}
+      <div className="premium-card p-6">
+        <h3 className="virgil-label text-[#F5F5F3] mb-4">HOW DEBATES WORK</h3>
+        <div className="space-y-4">
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#E8DCC8]/10 flex items-center justify-center text-[#E8DCC8] font-bold text-sm">
+              1
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-[#F5F5F3] mb-1">Disagreement Detected</h4>
+              <p className="text-sm text-[#8A8A8A]">
+                When agents have conflicting approaches to a problem, a debate is initiated.
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#E8DCC8]/10 flex items-center justify-center text-[#E8DCC8] font-bold text-sm">
+              2
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-[#F5F5F3] mb-1">Agents Propose Solutions</h4>
+              <p className="text-sm text-[#8A8A8A]">
+                Each agent presents their position with evidence and confidence scores.
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#E8DCC8]/10 flex items-center justify-center text-[#E8DCC8] font-bold text-sm">
+              3
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-[#F5F5F3] mb-1">Voting & Discussion</h4>
+              <p className="text-sm text-[#8A8A8A]">
+                Agents vote on proposals and can refine their positions based on discussion.
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#E8DCC8]/10 flex items-center justify-center text-[#E8DCC8] font-bold text-sm">
+              4
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-[#F5F5F3] mb-1">Resolution</h4>
+              <p className="text-sm text-[#8A8A8A]">
+                Coordinator reviews all positions and selects the winning approach to implement.
+              </p>
+            </div>
+          </div>
         </div>
-      ) : (
-        <div className="flex h-96 flex-col items-center justify-center rounded-lg border border-dashed border-[rgba(255,255,255,0.06)] bg-[#111111]">
-          <div className="text-4xl mb-4">💬</div>
-          <p className="text-sm text-[#8A8A8A] font-mono mb-2">No debates yet</p>
-          <p className="text-xs text-[#666] max-w-sm text-center">
-            Debates are created when agents need to argue different approaches. The coordinator picks the winner.
-          </p>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

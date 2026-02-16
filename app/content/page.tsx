@@ -292,7 +292,9 @@ export default function ContentPage() {
                     )}
                   </div>
                   {event.details && (
-                    <div className="text-[#8A8A8A] text-xs mt-1">{event.details}</div>
+                    <div className="text-[#8A8A8A] text-xs mt-1">
+                      {typeof event.details === 'string' ? event.details : JSON.stringify(event.details)}
+                    </div>
                   )}
                   <div className="text-[#8A8A8A] text-xs mt-1">
                     {new Date(event.created_at).toLocaleString()}

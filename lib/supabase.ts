@@ -43,7 +43,7 @@ export type PipelineEvent = {
   pipeline_id: string | null
   agent: string
   action: string
-  details: string | null
+  details: string | Record<string, any> | null
   created_at: string
   title?: string // joined from content_pipeline
 }
