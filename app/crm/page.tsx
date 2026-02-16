@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
+import { createPortal } from "react-dom";
 import { supabase, CRMContact } from "@/lib/supabase";
 import {
   Loader2, Search, Users, Mail, Building2, MapPin, ExternalLink,
@@ -138,6 +139,16 @@ export default function CRMPage() {
 
   const [companySearch, setCompanySearch] = useState('');
   const [showCompanyDropdown, setShowCompanyDropdown] = useState(false);
+  const companyInputRef = useRef<HTMLInputElement>(null);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
+
+  // Update dropdown position when showing
+  useEffect(() => {
+    if (showCompanyDropdown && companyInputRef.current) {
+      const rect = companyInputRef.current.getBoundingClientRect();
+      setDropdownPos({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+    }
+  }, [showCompanyDropdown, companySearch]);
   const filteredCompanies = useMemo(() => {
     if (!companySearch) return allCompanies.slice(0, 50);
     const q = companySearch.toLowerCase();
@@ -383,11 +394,12 @@ export default function CRMPage() {
           ))}
         </div>
         {/* Searchable company dropdown */}
-        <div className="relative" onClick={(e) => e.stopPropagation()}>
+        <div onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center gap-2">
             <div className="relative flex-1 max-w-xs">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-[#555]" />
               <input
+                ref={companyInputRef}
                 type="text"
                 placeholder="Search all companies..."
                 value={companySearch}
@@ -403,10 +415,22 @@ export default function CRMPage() {
               </span>
             )}
           </div>
-          {showCompanyDropdown && companySearch && (
+          {showCompanyDropdown && companySearch && typeof document !== 'undefined' && createPortal(
             <div
-              className="absolute mt-1 left-0 w-full max-w-xs rounded-lg max-h-52 overflow-y-auto"
-              style={{ zIndex: 9999, backgroundColor: '#141414', border: '1px solid rgba(255,255,255,0.15)', boxShadow: '0 8px 32px rgba(0,0,0,0.8)' }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                position: 'fixed',
+                top: dropdownPos.top,
+                left: dropdownPos.left,
+                width: dropdownPos.width || 320,
+                maxHeight: 220,
+                overflowY: 'auto',
+                zIndex: 99999,
+                backgroundColor: '#141414',
+                border: '1px solid rgba(255,255,255,0.15)',
+                borderRadius: 8,
+                boxShadow: '0 12px 40px rgba(0,0,0,0.9)',
+              }}
             >
               {filteredCompanies.length === 0 ? (
                 <div style={{ padding: '8px 12px', fontSize: 12, color: '#555', backgroundColor: '#141414' }}>No companies match</div>
@@ -431,7 +455,8 @@ export default function CRMPage() {
                   </button>
                 ))
               )}
-            </div>
+            </div>,
+            document.body
           )}
         </div>
       </div>
