@@ -63,6 +63,13 @@ export default function CRMPage() {
     return () => clearInterval(interval);
   }, []);
 
+  // Close company dropdown on outside click
+  useEffect(() => {
+    const handler = () => setShowCompanyDropdown(false);
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, []);
+
   async function loadContacts() {
     try {
       // Supabase default limit is 1000 — fetch all with pagination
@@ -117,17 +124,25 @@ export default function CRMPage() {
     return { statusCounts, tierCounts, withEmail, replied, dmSent };
   }, [contacts]);
 
-  /* ─── Top companies ─── */
-  const topCompanies = useMemo(() => {
+  /* ─── All companies ─── */
+  const allCompanies = useMemo(() => {
     const counts: Record<string, number> = {};
     contacts.forEach(c => {
       if (c.company) counts[c.company] = (counts[c.company] || 0) + 1;
     });
     return Object.entries(counts)
-      .filter(([_, count]) => count >= 2)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 40);
+      .sort((a, b) => b[1] - a[1]);
   }, [contacts]);
+
+  const topCompanies = allCompanies.filter(([_, count]) => count >= 2).slice(0, 30);
+
+  const [companySearch, setCompanySearch] = useState('');
+  const [showCompanyDropdown, setShowCompanyDropdown] = useState(false);
+  const filteredCompanies = useMemo(() => {
+    if (!companySearch) return allCompanies.slice(0, 50);
+    const q = companySearch.toLowerCase();
+    return allCompanies.filter(([name]) => name.toLowerCase().includes(q)).slice(0, 50);
+  }, [allCompanies, companySearch]);
 
   /* ─── Filtering ─── */
   const filtered = useMemo(() => {
@@ -349,27 +364,67 @@ export default function CRMPage() {
         </div>
 
         {/* Company filter */}
-        {topCompanies.length > 0 && (
-          <>
-            <div className="mono-small mb-2">COMPANY</div>
-            <div className="flex flex-wrap gap-1.5">
-              {topCompanies.slice(0, 30).map(([company, count]) => (
-                <button
-                  key={company}
-                  onClick={() => setFilterCompany(filterCompany === company ? '' : company)}
-                  className={cn(
-                    "px-2 py-1 rounded-md text-[11px] font-medium transition-all border",
-                    filterCompany === company
-                      ? 'bg-[#E8DCC8]/15 text-[#E8DCC8] border-[#E8DCC8]/30'
-                      : 'bg-[#1a1a1a] text-[#666] border-[rgba(255,255,255,0.06)] hover:text-[#999]'
-                  )}
-                >
-                  {company} <span className="opacity-50">{count}</span>
-                </button>
-              ))}
+        <div className="mono-small mb-2">COMPANY</div>
+        {/* Top company pills */}
+        <div className="flex flex-wrap gap-1.5 mb-2">
+          {topCompanies.slice(0, 20).map(([company, count]) => (
+            <button
+              key={company}
+              onClick={() => setFilterCompany(filterCompany === company ? '' : company)}
+              className={cn(
+                "px-2 py-1 rounded-md text-[11px] font-medium transition-all border",
+                filterCompany === company
+                  ? 'bg-[#E8DCC8]/15 text-[#E8DCC8] border-[#E8DCC8]/30'
+                  : 'bg-[#1a1a1a] text-[#666] border-[rgba(255,255,255,0.06)] hover:text-[#999]'
+              )}
+            >
+              {company} <span className="opacity-50">{count}</span>
+            </button>
+          ))}
+        </div>
+        {/* Searchable company dropdown */}
+        <div className="relative" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1 max-w-xs">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-[#555]" />
+              <input
+                type="text"
+                placeholder="Search all companies..."
+                value={companySearch}
+                onChange={(e) => { setCompanySearch(e.target.value); setShowCompanyDropdown(true); }}
+                onFocus={() => setShowCompanyDropdown(true)}
+                className="w-full pl-8 pr-3 py-1.5 rounded-md bg-[#111111] border border-[rgba(255,255,255,0.06)] text-xs text-[#F5F5F3] placeholder:text-[#444] focus:outline-none focus:border-[#E8DCC8]/40"
+              />
             </div>
-          </>
-        )}
+            {filterCompany && (
+              <span className="flex items-center gap-1 px-2 py-1 rounded-md bg-[#E8DCC8]/15 text-[#E8DCC8] text-xs border border-[#E8DCC8]/30">
+                {filterCompany}
+                <button onClick={() => setFilterCompany('')} className="hover:text-white">✕</button>
+              </span>
+            )}
+          </div>
+          {showCompanyDropdown && companySearch && (
+            <div className="absolute z-40 mt-1 w-full max-w-xs bg-[#111111] border border-[rgba(255,255,255,0.1)] rounded-lg shadow-xl max-h-48 overflow-y-auto">
+              {filteredCompanies.length === 0 ? (
+                <div className="px-3 py-2 text-xs text-[#555]">No companies match</div>
+              ) : (
+                filteredCompanies.map(([company, count]) => (
+                  <button
+                    key={company}
+                    onClick={() => { setFilterCompany(company); setCompanySearch(''); setShowCompanyDropdown(false); }}
+                    className={cn(
+                      "w-full text-left px-3 py-1.5 text-xs hover:bg-[#1a1a1a] transition-colors flex justify-between",
+                      filterCompany === company ? 'text-[#E8DCC8]' : 'text-[#999]'
+                    )}
+                  >
+                    <span className="truncate">{company}</span>
+                    <span className="text-[#555] ml-2 flex-shrink-0">{count}</span>
+                  </button>
+                ))
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ─── Search + Sort + View ─── */}
