@@ -34,6 +34,7 @@ const TIER_CONFIG: Record<string, { label: string; color: string; bg: string }> 
 };
 
 const SPECIAL_TAGS: Record<string, { label: string; bg: string }> = {
+  rijkste_belgen: { label: 'Rijkste Belgen', bg: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
   dm1_sent:  { label: 'DM Sent',  bg: 'bg-blue-500/15 text-blue-300 border-blue-500/30' },
   replied:   { label: 'Replied',  bg: 'bg-green-500/15 text-green-300 border-green-500/30' },
   has_email: { label: 'Has Email',bg: 'bg-purple-500/15 text-purple-300 border-purple-500/30' },
@@ -109,6 +110,7 @@ export default function CRMPage() {
     let withEmail = 0;
     let replied = 0;
     let dmSent = 0;
+    let rijksteBelgen = 0;
 
     contacts.forEach(c => {
       statusCounts[c.status] = (statusCounts[c.status] || 0) + 1;
@@ -120,9 +122,10 @@ export default function CRMPage() {
       if (c.email) withEmail++;
       if (tags.includes('replied')) replied++;
       if (tags.includes('dm1_sent')) dmSent++;
+      if (tags.includes('rijkste_belgen')) rijksteBelgen++;
     });
 
-    return { statusCounts, tierCounts, withEmail, replied, dmSent };
+    return { statusCounts, tierCounts, withEmail, replied, dmSent, rijksteBelgen };
   }, [contacts]);
 
   /* ─── All companies ─── */
@@ -341,7 +344,7 @@ export default function CRMPage() {
           {Object.entries(SPECIAL_TAGS).map(([key, cfg]) => {
             const active = filterSpecialTags.includes(key);
             const excluded = excludeTags.includes(key);
-            const count = key === 'has_email' ? stats.withEmail : key === 'replied' ? stats.replied : stats.dmSent;
+            const count = key === 'has_email' ? stats.withEmail : key === 'replied' ? stats.replied : key === 'rijkste_belgen' ? stats.rijksteBelgen : stats.dmSent;
             return (
               <div key={key} className="flex items-center gap-0.5">
                 <button
@@ -556,6 +559,9 @@ export default function CRMPage() {
                         {tags.includes('replied') && (
                           <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-green-500/15 text-green-300">💬</span>
                         )}
+                        {tags.includes('rijkste_belgen') && (
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-amber-500/15 text-amber-300">💰</span>
+                        )}
                       </div>
                       <div className="flex items-center gap-2 text-[11px] text-[#666] mt-0.5">
                         {contact.title && <span className="truncate max-w-[180px]">{contact.title}</span>}
@@ -728,6 +734,7 @@ function ContactDetail({ contact, onClose }: { contact: CRMContact; onClose: () 
         {tags.includes('dm1_sent') && <span className="px-2.5 py-1 rounded-md text-xs font-mono bg-blue-500/15 text-blue-300">DM Sent</span>}
         {tags.includes('replied') && <span className="px-2.5 py-1 rounded-md text-xs font-mono bg-green-500/15 text-green-300">Replied ✓</span>}
         {tags.includes('has_email') && <span className="px-2.5 py-1 rounded-md text-xs font-mono bg-purple-500/15 text-purple-300">Has Email</span>}
+        {tags.includes('rijkste_belgen') && <span className="px-2.5 py-1 rounded-md text-xs font-mono bg-amber-500/15 text-amber-300">💰 Rijkste Belgen</span>}
       </div>
 
       {/* Contact info grid */}
