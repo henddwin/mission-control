@@ -9,7 +9,9 @@ import {
   CheckSquare, 
   MessageCircle, 
   BarChart3, 
-  FileText 
+  FileText,
+  Lightbulb,
+  UserCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +19,8 @@ const navigation = [
   { name: "Activity", href: "/", icon: Activity },
   { name: "Agents", href: "/agents", icon: Users },
   { name: "Tasks", href: "/tasks", icon: CheckSquare },
+  { name: "Content", href: "/content", icon: Lightbulb },
+  { name: "CRM", href: "/crm", icon: UserCircle },
   { name: "Debates", href: "/debates", icon: MessageCircle },
   { name: "Standup", href: "/standup", icon: BarChart3 },
   { name: "Logs", href: "/logs", icon: FileText },
