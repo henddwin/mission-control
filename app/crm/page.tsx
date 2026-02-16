@@ -404,7 +404,7 @@ export default function CRMPage() {
             )}
           </div>
           {showCompanyDropdown && companySearch && (
-            <div className="absolute z-[100] mt-1 left-0 w-full max-w-xs rounded-lg shadow-2xl max-h-52 overflow-y-auto border border-[rgba(255,255,255,0.12)]" style={{ backgroundColor: '#181818' }}>
+            <div className="absolute z-[100] mt-1 left-0 w-full max-w-xs rounded-lg shadow-2xl max-h-52 overflow-y-auto border border-[rgba(255,255,255,0.12)] bg-[#181818] backdrop-blur-none" style={{ backgroundColor: '#181818', isolation: 'isolate' }}>
               {filteredCompanies.length === 0 ? (
                 <div className="px-3 py-2.5 text-xs text-[#555]">No companies match</div>
               ) : (
@@ -414,7 +414,7 @@ export default function CRMPage() {
                     onClick={() => { setFilterCompany(company); setCompanySearch(''); setShowCompanyDropdown(false); }}
                     className={cn(
                       "w-full text-left px-3 py-2 text-xs transition-colors flex justify-between border-b border-[rgba(255,255,255,0.04)] last:border-0",
-                      filterCompany === company ? 'bg-[#E8DCC8]/10 text-[#E8DCC8]' : 'text-[#aaa] hover:bg-[#222] hover:text-[#E8DCC8]'
+                      filterCompany === company ? 'bg-[#252520] text-[#E8DCC8]' : 'bg-[#181818] text-[#aaa] hover:bg-[#222] hover:text-[#E8DCC8]'
                     )}
                   >
                     <span className="truncate">{company}</span>
